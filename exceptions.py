@@ -1,11 +1,20 @@
-class TokenNotFound(Exception):
-    """Ошибка вызываемая при отсутствии токенов."""
-
-    pass
+from telegram.error import TelegramError
 
 
 class FromDateFormatError(Exception):
     """Передано неверное значение даты для запроса API."""
+
+    pass
+
+
+class ApiRequestError(Exception):
+    """Ошибка при попытке запроса к API."""
+
+    pass
+
+
+class UnexpectedResponseCodeError(Exception):
+    """Ожидаемый код ответа API не равен 200."""
 
     pass
 
@@ -16,25 +25,37 @@ class ApiResponseKeysError(Exception):
     pass
 
 
-class UnexpectedHomeworkStatus(Exception):
+class HomeworkStatusKeyMissingError(Exception):
+    """Отсутствует статус домашней работы в ответе API."""
+
+    pass
+
+
+class HomeworkStatusError(Exception):
     """Неверный статус домашней работы в ответе API."""
 
     pass
 
 
-class HomeworkNameMissing(Exception):
+class HomeworkNameError(Exception):
     """Отсутствует имя домашней работы в ответе API."""
 
     pass
 
 
-class PracticumAuthorizationFailed(Exception):
+class PracticumAuthorizationError(Exception):
     """Ошибка авторизации при запросе к API Практикума."""
 
     pass
 
 
-class ServiceUnavailable(Exception):
+class ServiceUnavailableError(Exception):
     """При запросе к API Практикума нет ответа от сервера."""
+
+    pass
+
+
+class TelegramMessageError(TelegramError):
+    """Ошибка при попытке отправить сообщение в Telegram."""
 
     pass
