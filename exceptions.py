@@ -1,6 +1,3 @@
-from telegram.error import TelegramError
-
-
 class FromDateFormatError(Exception):
     """Передано неверное значение даты для запроса API."""
 
@@ -55,7 +52,7 @@ class ServiceUnavailableError(Exception):
     pass
 
 
-class TelegramMessageError(TelegramError):
+class TelegramMessageError(Exception):
     """Ошибка при попытке отправить сообщение в Telegram."""
 
     pass

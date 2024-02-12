@@ -5,7 +5,7 @@ import time
 
 import requests
 from dotenv import load_dotenv
-from telegram import Bot, Message
+from telegram import Bot
 from telegram.error import TelegramError
 
 import exceptions
@@ -27,7 +27,7 @@ HOMEWORK_VERDICTS = {
 }
 
 
-def check_tokens():  # Согласовали не править(не пропускают тесты)
+def check_tokens():
     """Проверка доступности необходимых переменных окружения."""
     for token in (TELEGRAM_TOKEN, PRACTICUM_TOKEN, TELEGRAM_CHAT_ID):
         if not token:
@@ -38,7 +38,7 @@ def check_tokens():  # Согласовали не править(не проп�
             sys.exit('Отсутствует обязательная переменная окружения')
 
 
-def send_message(bot: Bot, message: str) -> Message:
+def send_message(bot: Bot, message: str) -> None:
     """Отправка сообщения ботом в телеграм о статусе работы."""
     try:
         logging.debug(f'Попытка отправки сообщения: "{message}"..')
@@ -63,8 +63,10 @@ def get_api_answer(timestamp: int) -> dict:
             headers={'Authorization': f'OAuth {PRACTICUM_TOKEN}'},
             params={'from_date': timestamp}
         )
-    except Exception:
-        raise exceptions.ApiRequestError('Ошибка при попытке запроса к API')
+    except Exception as error:
+        raise exceptions.ApiRequestError(
+            f'Ошибка при попытке запроса к API: {error}'
+        )
     if response.status_code == 503:
         raise exceptions.ServiceUnavailableError(
             f'Эндпоинт {ENDPOINT} недоступен'
@@ -107,9 +109,9 @@ def parse_status(homework):
         raise exceptions.HomeworkStatusKeyMissingError(
             'Отсутствует статус домашней работы в ответе API'
         )
-    if status not in HOMEWORK_VERDICTS.keys():
+    if status not in HOMEWORK_VERDICTS:
         raise exceptions.HomeworkStatusError(
-            'Ошибка при получении статуса работы.'
+            f'Поступил неизвестный статус работы: {status}'
         )
     verdict = HOMEWORK_VERDICTS[status]
     homework_name = homework.get('homework_name')
@@ -141,7 +143,10 @@ def main():
             else:
                 logging.debug('Нет нового статуса проверки работы.')
         except exceptions.TelegramMessageError:
-            pass
+            logging.debug(
+                ('Ошибка при попытке отправить сообщение в Telegram '
+                 'о новом статусе работы.')
+            )
         except Exception as error:
             logging.error(error)
             error_message = f'Сбой в работе программы: {error}'
